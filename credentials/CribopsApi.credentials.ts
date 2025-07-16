@@ -3,12 +3,14 @@ import {
   ICredentialTestRequest,
   ICredentialType,
   INodeProperties,
+  Icon,
 } from 'n8n-workflow';
 
 export class CribopsApi implements ICredentialType {
   name = 'cribopsApi';
   displayName = 'Cribops API';
   documentationUrl = 'https://github.com/CloudBedrock/n8n-nodes-cribops/wiki';
+  icon: Icon = 'node:n8n-nodes-cribops.cribops';
   properties: INodeProperties[] = [
     {
       displayName: 'API Token',
