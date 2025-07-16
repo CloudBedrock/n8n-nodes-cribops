@@ -1,13 +1,9 @@
 <svg width="60" height="60" viewBox="0 0 60 60" fill="none" xmlns="http://www.w3.org/2000/svg">
-  <!-- Cloud shape maximized to fill entire space -->
-  <path d="M54 40C56.7614 40 59 37.7614 59 35C59 32.2386 56.7614 30 54 30C53.6 30 53.21 30.05 52.84 30.14C52.4 20.89 44.67 13.5 35 13.5C29 13.5 23.65 16.45 20.5 21C19.5 20.75 18.5 20.625 17.5 20.625C9.45 20.625 3 27.07 3 35.125C3 35.5 3.02 35.875 3.06 36.25C1.2 37.5 0 39.75 0 42.25C0 46.25 3.25 49.5 7.25 49.5H54V40Z" fill="#1CBFEF"/>
+  <!-- Simplified, bolder cloud shape -->
+  <path d="M48 24C48 15.72 41.28 9 33 9C26.1 9 20.25 13.32 17.88 19.38C17.25 19.14 16.62 19.02 15.96 19.02C11.52 19.02 7.92 22.62 7.92 27.06C7.92 27.6 7.98 28.14 8.1 28.62C3.66 29.34 0.3 33.18 0.3 37.8C0.3 42.96 4.44 47.1 9.6 47.1H45.6C51.9 47.1 57 42 57 35.7C57 29.88 52.68 25.08 47.16 24.42C47.64 24.3 48 24.18 48 24Z" fill="#0B6FCC" stroke="#0B6FCC" stroke-width="1"/>
   
-  <!-- Bar chart inside cloud - larger -->
-  <rect x="18" y="40" width="5" height="10" rx="0.5" fill="white"/>
-  <rect x="25" y="35" width="5" height="15" rx="0.5" fill="white"/>
-  <rect x="32" y="30" width="5" height="20" rx="0.5" fill="white"/>
-  <rect x="39" y="25" width="5" height="25" rx="0.5" fill="#0B2A4A"/>
-  
-  <!-- Arrow - larger -->
-  <path d="M48 22L54 16M54 16V22M54 16H48" stroke="#0B2A4A" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+  <!-- Simpler, bolder bars -->
+  <rect x="16" y="35" width="8" height="12" rx="1" fill="white"/>
+  <rect x="26" y="28" width="8" height="19" rx="1" fill="white"/>
+  <rect x="36" y="23" width="8" height="24" rx="1" fill="white"/>
 </svg>
