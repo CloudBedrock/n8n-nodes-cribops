@@ -10,7 +10,8 @@ export class CribopsApi implements ICredentialType {
   name = 'cribopsApi';
   displayName = 'Cribops API';
   documentationUrl = 'https://github.com/CloudBedrock/n8n-nodes-cribops/wiki';
-  icon: Icon = 'node:n8n-nodes-cribops.cribops';
+  // Icon removed due to n8n bug with credential icons in community nodes
+  // See: https://github.com/n8n-io/n8n/issues/11642
   properties: INodeProperties[] = [
     {
       displayName: 'API Token',
