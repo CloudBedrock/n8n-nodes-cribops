@@ -1,19 +1,19 @@
 <svg width="60" height="60" viewBox="0 0 60 60" fill="none" xmlns="http://www.w3.org/2000/svg">
-  <!-- Cloud shape with proper padding -->
-  <path d="M42 32C44.2091 32 46 30.2091 46 28C46 25.7909 44.2091 24 42 24C41.8258 24 41.6553 24.0161 41.4896 24.0469C41.3537 20.9452 38.7802 18.5 35.625 18.5C33.6885 18.5 31.9915 19.5518 31.0833 21.1042C30.7361 21.0417 30.3792 21.0083 30.0125 21.0083C27.2512 21.0083 25 23.2495 25 26C25 26.1306 25.0052 26.2604 25.0156 26.3889C23.1198 26.8198 21.75 28.5156 21.75 30.5833C21.75 33.0271 23.6927 35 26.125 35H42V32Z" fill="#2D3748"/>
+  <!-- Background circle -->
+  <rect width="60" height="60" rx="8" fill="#0B2A4A"/>
   
-  <!-- Bar chart inside cloud -->
-  <rect x="27" y="30" width="2.5" height="4" rx="0.5" fill="white"/>
-  <rect x="30" y="28" width="2.5" height="6" rx="0.5" fill="white"/>
-  <rect x="33" y="26" width="2.5" height="8" rx="0.5" fill="white"/>
-  <rect x="36" y="24" width="2.5" height="10" rx="0.5" fill="white"/>
+  <!-- Cloud shape in Cribops blue -->
+  <path d="M38 34C39.1046 34 40 33.1046 40 32C40 30.8954 39.1046 30 38 30C37.9121 30 37.8261 30.0091 37.7422 30.0264C37.6614 28.2817 36.1888 26.9063 34.4141 26.9063C33.3248 26.9063 32.3702 27.4979 31.8594 28.3711C31.6641 28.3359 31.4633 28.3172 31.2571 28.3172C29.6788 28.3172 28.3906 29.5779 28.3906 31.125C28.3906 31.1984 28.3929 31.2715 28.3975 31.3438C27.3799 31.5862 26.6094 32.4901 26.6094 33.5547C26.6094 34.8021 27.6146 35.8125 28.8516 35.8125H38V34Z" fill="#1CBFEF"/>
   
-  <!-- Growth arrow -->
-  <path d="M40 22L43 19M43 19V22M43 19H40" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+  <!-- Bar chart in light gray/white -->
+  <rect x="29.5" y="32.5" width="1.5" height="2.5" rx="0.2" fill="#E5E5E5"/>
+  <rect x="31.3" y="31" width="1.5" height="4" rx="0.2" fill="#F0F0F0"/>
+  <rect x="33.1" y="29.5" width="1.5" height="5.5" rx="0.2" fill="#FFFFFF"/>
+  <rect x="34.9" y="28" width="1.5" height="7" rx="0.2" fill="#1CBFEF"/>
   
-  <!-- Trigger indicator (lightning bolt) -->
-  <path d="M44 21L42 24H45L43 27" stroke="#FBB040" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+  <!-- Arrow in bright blue -->
+  <path d="M37 27L38.5 25.5M38.5 25.5V27M38.5 25.5H37" stroke="#1CBFEF" stroke-width="0.8" stroke-linecap="round" stroke-linejoin="round"/>
   
-  <!-- Data dot -->
-  <rect x="43.5" y="28.5" width="1.5" height="1.5" rx="0.5" fill="#2D3748"/>
+  <!-- Trigger indicator (lightning bolt) in white -->
+  <path d="M40 26L38 29H41L39 32" stroke="#FFFFFF" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
 </svg>
