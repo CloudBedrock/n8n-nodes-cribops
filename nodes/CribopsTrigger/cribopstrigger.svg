@@ -1,8 +1,19 @@
 <svg width="60" height="60" viewBox="0 0 60 60" fill="none" xmlns="http://www.w3.org/2000/svg">
-  <rect width="60" height="60" rx="12" fill="#059669"/>
-  <path d="M15 20C15 17.7909 16.7909 16 19 16H41C43.2091 16 45 17.7909 45 20V32C45 34.2091 43.2091 36 41 36H26L18 42V36H19C16.7909 36 15 34.2091 15 32V20Z" fill="white"/>
-  <path d="M20 24L28 28L20 32V24Z" fill="#059669"/>
-  <rect x="32" y="24" width="8" height="2" fill="#059669"/>
-  <rect x="32" y="28" width="8" height="2" fill="#059669"/>
-  <rect x="32" y="32" width="6" height="2" fill="#059669"/>
+  <!-- Cloud shape -->
+  <path d="M45 35C48.3137 35 51 32.3137 51 29C51 25.6863 48.3137 23 45 23C44.7581 23 44.5214 23.0214 44.2917 23.0625C44.0974 18.5936 40.3736 15 35.8333 15C32.8387 15 30.2097 16.5691 28.7361 18.9028C28.2361 18.8194 27.7222 18.7778 27.1944 18.7778C23.2183 18.7778 20 21.9961 20 25.9722C20 26.1597 20.0069 26.3472 20.0208 26.5278C17.1597 27.1597 15 29.6875 15 32.7778C15 36.3542 17.9236 39.2778 21.5 39.2778H45C45 39.2778 45 35 45 35Z" fill="#2D3748"/>
+  
+  <!-- Bar chart inside cloud -->
+  <rect x="22" y="32" width="3" height="5" rx="0.5" fill="white"/>
+  <rect x="26" y="29" width="3" height="8" rx="0.5" fill="white"/>
+  <rect x="30" y="26" width="3" height="11" rx="0.5" fill="white"/>
+  <rect x="34" y="23" width="3" height="14" rx="0.5" fill="white"/>
+  
+  <!-- Growth arrow -->
+  <path d="M39 20L44 15M44 15L44 20M44 15L39 15" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+  
+  <!-- Trigger indicator (lightning bolt) -->
+  <path d="M48 18L45 22H49L46 26" stroke="#FBB040" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+  
+  <!-- Data dot -->
+  <rect x="47" y="28" width="2" height="2" rx="0.5" fill="#2D3748"/>
 </svg>

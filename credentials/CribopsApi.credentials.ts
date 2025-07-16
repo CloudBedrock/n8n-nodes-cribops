@@ -34,7 +34,6 @@ export class CribopsApi implements ICredentialType {
       name: 'accountId',
       type: 'string',
       default: '',
-      required: false,
       description: 'Account ID for cloud service integration',
     },
     {
@@ -45,7 +44,6 @@ export class CribopsApi implements ICredentialType {
         password: true,
       },
       default: '',
-      required: false,
       description: 'Account secret key for cloud service integration',
     },
     {
@@ -53,7 +51,6 @@ export class CribopsApi implements ICredentialType {
       name: 'region',
       type: 'string',
       default: 'us-east-1',
-      required: false,
       description: 'Region for cloud service integration',
     },
   ];
