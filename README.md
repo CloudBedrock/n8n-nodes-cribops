@@ -1,32 +1,37 @@
 # n8n-nodes-cribops
 
-A custom n8n community node package for seamless integration with the Cribops AI platform. This package provides two specialized nodes that enable communication between n8n workflows and Cribops agents through HTTP webhooks.
+A custom n8n community node package for seamless integration with the Cribops AI platform. This package provides two specialized nodes that enable communication between n8n workflows and Cribops agents through HTTP webhooks with optional AWS service integration.
 
 ## Features
 
 - **HTTP Webhook Integration**: Reliable message exchange through webhook endpoints
+- **AWS Service Support**: Integration with AWS SQS queues and SNS topics for scalable messaging
 - **File Attachments**: Full support for file uploads and downloads via S3 presigned URLs
 - **Dynamic Agent Selection**: Automatically populated agent dropdown from Cribops API
 - **Message Filtering**: Filter incoming messages by event type
 - **Conversation Context**: Maintains conversation context across message exchanges
-- **Secure Authentication**: Bearer token authentication for API access
+- **Secure Authentication**: Dual authentication support - Bearer token for API access and AWS credentials for cloud services
+- **Typing Indicators**: Send typing status to show agent activity in conversations
 
 ## Nodes Included
 
 ### 1. Cribops Node
 A regular node for sending messages to Cribops agents with support for:
-- Message sending with file attachments
-- Reply to existing conversations
-- Agent information retrieval
-- File upload capabilities
+- Send messages with file attachments
+- Reply to existing conversations with webhook context
+- Send typing indicators to show agent activity
+- Retrieve agent information (single or list)
+- Dynamic agent selection with search functionality
+- Metadata support for custom message properties
 
 ### 2. Cribops Trigger Node
 A trigger node for receiving messages from Cribops users with:
 - HTTP webhook message reception
-- File attachment handling
-- Conversation context preservation
-- Message filtering by event type
-- Automatic agent ID inclusion in output
+- Event type filtering (user messages, agent responses, file attachments)
+- Conversation context preservation with response webhook
+- Secret token validation for secure webhooks
+- Automatic data enrichment (agent_id, conversation_id, response_webhook)
+- Future support for AWS SQS queue polling and SNS topic subscriptions
 
 ## Installation
 
@@ -67,10 +72,11 @@ npm link
 ### 1. Cribops API Credentials
 Create a new credential in n8n:
 - **Credential Type**: Cribops API
-- **Server URL**: Your Cribops instance URL (e.g., `https://cribops.com`)
-- **Bearer Token**: Your Cribops API token
-- **Organization ID**: (Optional) Your organization ID
-- **Tenant ID**: (Optional) Your tenant ID
+- **API Token**: Your Cribops API token (Required)
+- **Base URL**: Your Cribops instance URL (e.g., `https://api.cribops.com`)
+- **Account ID**: (Optional) Account ID for AWS service integration
+- **Account Secret**: (Optional) Secret key for AWS service integration
+- **Region**: (Optional) AWS region for cloud services (default: us-east-1)
 
 ### 2. Agent Selection
 The nodes automatically populate available agents from your Cribops instance. Select the appropriate agent from the dropdown when configuring each node.
@@ -95,10 +101,14 @@ The nodes automatically populate available agents from your Cribops instance. Se
 ## API Integration
 
 ### Cribops Platform Endpoints
-- `GET /api/v1/agents` - Agent selection
+- `GET /api/v1/agents` - Agent selection and retrieval
+- `GET /api/v1/agents/{agent_id}` - Get specific agent details
 - `POST /webhooks/agents/{agent_id}/message` - HTTP webhook endpoint
 - `POST /api/v1/agents/{agent_id}/files` - File uploads
+- `POST /api/v1/agents/{agent_id}/typing` - Send typing indicators
 - Response webhook URL provided in incoming messages for replies
+- AWS SQS queue endpoints (when configured with AWS credentials)
+- AWS SNS topic endpoints (when configured with AWS credentials)
 
 ### Message Formats
 
@@ -109,7 +119,10 @@ The nodes automatically populate available agents from your Cribops instance. Se
   "content": "Hello, I need help with...",
   "message_id": "uuid-v4",
   "user_id": "uuid-v4",
+  "organization_id": "uuid-v4",
   "timestamp": "2025-01-10T16:00:00Z",
+  "response_webhook": "https://api.cribops.com/webhooks/response/uuid-v4",
+  "type": "user_message",
   "attachments": [
     {
       "type": "image",
@@ -186,6 +199,11 @@ N8N_CUSTOM_EXTENSIONS=n8n-nodes-cribops n8n start
 # For local development
 export CRIBOPS_API_URL=http://localhost:4000
 
+# AWS configuration (optional)
+export AWS_REGION=us-east-1
+export AWS_ACCESS_KEY_ID=your_access_key
+export AWS_SECRET_ACCESS_KEY=your_secret_key
+
 # For n8n configuration
 export N8N_CUSTOM_EXTENSIONS=n8n-nodes-cribops
 export N8N_NODES_INCLUDE=n8n-nodes-cribops
@@ -254,12 +272,17 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ## Changelog
 
-### Version 0.1.0
+### Version 0.1.5
 - Initial release
 - HTTP webhook support for sending and receiving messages
-- File attachment handling
-- Dynamic agent selection
-- Reply to conversation functionality
+- File attachment handling with S3 presigned URLs
+- Dynamic agent selection with search functionality
+- Reply to conversation functionality with webhook context
+- Typing indicator support
+- Event type filtering for trigger node
+- AWS credentials support for future SQS/SNS integration
+- Secret token validation for webhooks
+- Message metadata support
 
 ## Related Projects
 
