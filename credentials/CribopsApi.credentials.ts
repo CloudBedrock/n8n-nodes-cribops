@@ -8,7 +8,7 @@ import {
 export class CribopsApi implements ICredentialType {
   name = 'cribopsApi';
   displayName = 'Cribops API';
-  documentationUrl = 'https://docs.cribops.com';
+  documentationUrl = 'https://github.com/CloudBedrock/n8n-nodes-cribops/wiki';
   properties: INodeProperties[] = [
     {
       displayName: 'API Token',

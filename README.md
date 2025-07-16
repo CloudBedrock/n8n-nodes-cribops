@@ -1,44 +1,48 @@
 # n8n-nodes-cribops
 
-A custom n8n community node package for seamless integration with the Cribops AI platform. This package provides two specialized nodes that enable communication between n8n workflows and Cribops agents through HTTP webhooks with optional AWS service integration.
+This is an n8n community node. It lets you use Cribops in your n8n workflows.
+
+Cribops is the platform where teams build, deploy, and scale AI-powered automation agents for customer service, support, and business operations.
+
+> **Note**: This integration requires an active subscription with [Cribops.com](https://cribops.com). Sign up for an account to obtain your API credentials.
 
 ## Features
 
-- **HTTP Webhook Integration**: Reliable message exchange through webhook endpoints
-- **AWS Service Support**: Integration with AWS SQS queues and SNS topics for scalable messaging
-- **File Attachments**: Full support for file uploads and downloads via S3 presigned URLs
-- **Dynamic Agent Selection**: Automatically populated agent dropdown from Cribops API
-- **Message Filtering**: Filter incoming messages by event type
-- **Conversation Context**: Maintains conversation context across message exchanges
-- **Secure Authentication**: Dual authentication support - Bearer token for API access and AWS credentials for cloud services
-- **Typing Indicators**: Send typing status to show agent activity in conversations
+- **Scalable Automation**: Build resilient workflows with AI agents that handle customer interactions at scale
+- **AWS Service Integration**: Leverage AWS SQS queues and SNS topics for enterprise-grade message processing
+- **Real-time Communication**: HTTP webhooks enable instant bidirectional messaging between n8n and Cribops agents
+- **Smart Agent Routing**: Dynamic agent selection ensures messages reach the right automation specialist
+- **Context Preservation**: Maintains full conversation history across complex multi-step workflows
+- **Enterprise Security**: Dual authentication with API tokens and AWS credentials for secure cloud operations
+- **File Processing**: Handle documents, images, and attachments through S3 presigned URLs
+- **Event-Driven Triggers**: Filter and respond to specific event types for targeted automation
 
 ## Nodes Included
 
 ### 1. Cribops Node
-A regular node for sending messages to Cribops agents with support for:
-- Send messages with file attachments
-- Reply to existing conversations with webhook context
-- Send typing indicators to show agent activity
-- Retrieve agent information (single or list)
-- Dynamic agent selection with search functionality
-- Metadata support for custom message properties
+Execute operations on Cribops automation agents:
+- **Send Messages**: Dispatch requests to AI agents with file attachments and metadata
+- **Manage Conversations**: Reply to ongoing conversations while maintaining full context
+- **Agent Operations**: List available agents, retrieve agent details, and route dynamically
+- **Real-time Status**: Send typing indicators to show processing activity
+- **Custom Properties**: Attach metadata for workflow-specific data handling
 
 ### 2. Cribops Trigger Node
-A trigger node for receiving messages from Cribops users with:
-- HTTP webhook message reception
-- Event type filtering (user messages, agent responses, file attachments)
-- Conversation context preservation with response webhook
-- Secret token validation for secure webhooks
-- Automatic data enrichment (agent_id, conversation_id, response_webhook)
-- Future support for AWS SQS queue polling and SNS topic subscriptions
+Receive and process events from Cribops automation platform:
+- **Webhook Reception**: Instantly receive messages from users and agents
+- **Smart Filtering**: Process only relevant events (user messages, agent responses, attachments)
+- **Secure Validation**: Verify webhook authenticity with secret tokens
+- **Data Enrichment**: Automatically include routing information for seamless replies
+- **Queue Integration**: Future support for AWS SQS polling for guaranteed message delivery
+- **Topic Subscriptions**: Future support for AWS SNS for event broadcasting
 
 ## Installation
 
 ### Prerequisites
 - Node.js >= 20.15
 - n8n >= 1.0.0
-- Cribops AI platform account with API access
+- Active Cribops subscription (visit [cribops.com](https://cribops.com) to sign up)
+- Cribops API access token (available in your Cribops dashboard)
 
 ### Via npm (Recommended)
 ```bash
@@ -83,20 +87,29 @@ The nodes automatically populate available agents from your Cribops instance. Se
 
 ## Usage Examples
 
-### Basic Message Flow
+### Customer Support Automation
 ```
-[Cribops Trigger] → [Process Message] → [Cribops Response]
+[Cribops Trigger] → [Sentiment Analysis] → [Route to Agent] → [Cribops Response]
 ```
+Automatically analyze customer sentiment and route to specialized AI agents based on urgency and topic.
 
-### File Attachment Workflow
+### Document Processing Pipeline
 ```
-[Cribops Trigger] → [Download File] → [Process] → [Cribops Response with File]
+[Cribops Trigger] → [Extract Attachment] → [OCR/Parse] → [Database] → [Cribops Response]
 ```
+Process incoming documents, extract data, store in database, and respond with confirmation.
 
-### Multi-Step Processing
+### Multi-Channel Integration
 ```
-[Cribops Trigger] → [Data Processing] → [Database] → [Cribops Response]
+[Slack] → [Format Message] → [Cribops Agent] → [Process] → [Email/SMS/Slack]
 ```
+Receive requests from any channel, process with Cribops agents, and respond across multiple platforms.
+
+### Escalation Workflow
+```
+[Cribops Trigger] → [Check Complexity] → [If Complex] → [Human Review] → [Cribops Response]
+```
+Automatically escalate complex requests while handling routine inquiries with AI agents.
 
 ## API Integration
 
@@ -262,13 +275,21 @@ n8n start
 
 ## License
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+This n8n community node is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+**Important License Clarification:**
+- The MIT license applies **only** to this n8n node integration code
+- Cribops platform, services, and AI agents are licensed separately by CloudBedrock
+- Use of Cribops services requires an active subscription and acceptance of Cribops Terms of Service
+- CloudBedrock proprietary components and APIs remain under CloudBedrock's commercial license
+- This open-source node is a client interface and does not grant any license to use Cribops services beyond your subscription terms
 
 ## Support
 
-- **Documentation**: [Cribops Platform Docs](https://docs.cribops.com)
+- **Documentation**: [GitHub Wiki](https://github.com/CloudBedrock/n8n-nodes-cribops/wiki)
 - **Issues**: [GitHub Issues](https://github.com/CloudBedrock/n8n-nodes-cribops/issues)
 - **Community**: [n8n Community](https://community.n8n.io)
+- **Cribops Platform**: [cribops.com](https://cribops.com)
 
 ## Changelog
 
@@ -291,4 +312,8 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ---
 
-**Note**: This is a community-maintained package. For official support, please contact the Cribops AI team.
+**Note**: This is a community-maintained package that requires an active Cribops subscription. For official support, please contact the Cribops AI team at [cribops.com](https://cribops.com).
+
+## Disclaimer
+
+This n8n node is provided as an open-source integration tool. CloudBedrock and Cribops are registered trademarks of CloudBedrock, Inc. The use of these trademarks in this project is for identification purposes only and does not imply endorsement.
