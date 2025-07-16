@@ -1,19 +1,19 @@
 <svg width="60" height="60" viewBox="0 0 60 60" fill="none" xmlns="http://www.w3.org/2000/svg">
-  <!-- Cloud shape -->
-  <path d="M45 35C48.3137 35 51 32.3137 51 29C51 25.6863 48.3137 23 45 23C44.7581 23 44.5214 23.0214 44.2917 23.0625C44.0974 18.5936 40.3736 15 35.8333 15C32.8387 15 30.2097 16.5691 28.7361 18.9028C28.2361 18.8194 27.7222 18.7778 27.1944 18.7778C23.2183 18.7778 20 21.9961 20 25.9722C20 26.1597 20.0069 26.3472 20.0208 26.5278C17.1597 27.1597 15 29.6875 15 32.7778C15 36.3542 17.9236 39.2778 21.5 39.2778H45C45 39.2778 45 35 45 35Z" fill="#2D3748"/>
+  <!-- Cloud shape with proper padding -->
+  <path d="M42 32C44.2091 32 46 30.2091 46 28C46 25.7909 44.2091 24 42 24C41.8258 24 41.6553 24.0161 41.4896 24.0469C41.3537 20.9452 38.7802 18.5 35.625 18.5C33.6885 18.5 31.9915 19.5518 31.0833 21.1042C30.7361 21.0417 30.3792 21.0083 30.0125 21.0083C27.2512 21.0083 25 23.2495 25 26C25 26.1306 25.0052 26.2604 25.0156 26.3889C23.1198 26.8198 21.75 28.5156 21.75 30.5833C21.75 33.0271 23.6927 35 26.125 35H42V32Z" fill="#2D3748"/>
   
   <!-- Bar chart inside cloud -->
-  <rect x="22" y="32" width="3" height="5" rx="0.5" fill="white"/>
-  <rect x="26" y="29" width="3" height="8" rx="0.5" fill="white"/>
-  <rect x="30" y="26" width="3" height="11" rx="0.5" fill="white"/>
-  <rect x="34" y="23" width="3" height="14" rx="0.5" fill="white"/>
+  <rect x="27" y="30" width="2.5" height="4" rx="0.5" fill="white"/>
+  <rect x="30" y="28" width="2.5" height="6" rx="0.5" fill="white"/>
+  <rect x="33" y="26" width="2.5" height="8" rx="0.5" fill="white"/>
+  <rect x="36" y="24" width="2.5" height="10" rx="0.5" fill="white"/>
   
   <!-- Growth arrow -->
-  <path d="M39 20L44 15M44 15L44 20M44 15L39 15" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M40 22L43 19M43 19V22M43 19H40" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
   
   <!-- Trigger indicator (lightning bolt) -->
-  <path d="M48 18L45 22H49L46 26" stroke="#FBB040" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+  <path d="M44 21L42 24H45L43 27" stroke="#FBB040" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
   
   <!-- Data dot -->
-  <rect x="47" y="28" width="2" height="2" rx="0.5" fill="#2D3748"/>
+  <rect x="43.5" y="28.5" width="1.5" height="1.5" rx="0.5" fill="#2D3748"/>
 </svg>
