@@ -1,13 +1,13 @@
 <svg width="60" height="60" viewBox="0 0 60 60" fill="none" xmlns="http://www.w3.org/2000/svg">
-  <!-- Cloud shape enlarged to fill space -->
-  <path d="M48 42C51.3137 42 54 39.3137 54 36C54 32.6863 51.3137 30 48 30C47.6371 30 47.2823 30.0348 46.9375 30.1016C46.5703 22.4509 40.293 16.5 32.625 16.5C27.6094 16.5 23.2031 19.2891 20.875 23.4531C20.0625 23.2891 19.2266 23.2031 18.375 23.2031C12.0898 23.2031 7 28.293 7 34.5781C7 34.8906 7.0156 35.2031 7.0469 35.5078C3.12891 36.5391 0.375 40.2578 0.375 44.6719C0.375 50.0547 4.81641 54.5 10.2031 54.5H48V42Z" fill="#1CBFEF"/>
+  <!-- Cloud shape maximized to fill entire space -->
+  <path d="M54 40C56.7614 40 59 37.7614 59 35C59 32.2386 56.7614 30 54 30C53.6 30 53.21 30.05 52.84 30.14C52.4 20.89 44.67 13.5 35 13.5C29 13.5 23.65 16.45 20.5 21C19.5 20.75 18.5 20.625 17.5 20.625C9.45 20.625 3 27.07 3 35.125C3 35.5 3.02 35.875 3.06 36.25C1.2 37.5 0 39.75 0 42.25C0 46.25 3.25 49.5 7.25 49.5H54V40Z" fill="#1CBFEF"/>
   
-  <!-- Bar chart enlarged -->
-  <rect x="15" y="46" width="4" height="7" rx="0.5" fill="#0B2A4A"/>
-  <rect x="21" y="42" width="4" height="11" rx="0.5" fill="#0B2A4A"/>
-  <rect x="27" y="38" width="4" height="15" rx="0.5" fill="#0B2A4A"/>
-  <rect x="33" y="34" width="4" height="19" rx="0.5" fill="#1CBFEF"/>
+  <!-- Bar chart inside cloud - larger -->
+  <rect x="18" y="40" width="5" height="10" rx="0.5" fill="white"/>
+  <rect x="25" y="35" width="5" height="15" rx="0.5" fill="white"/>
+  <rect x="32" y="30" width="5" height="20" rx="0.5" fill="white"/>
+  <rect x="39" y="25" width="5" height="25" rx="0.5" fill="#0B2A4A"/>
   
-  <!-- Arrow enlarged -->
-  <path d="M42 30L48 24M48 24V30M48 24H42" stroke="#1CBFEF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+  <!-- Arrow - larger -->
+  <path d="M48 22L54 16M54 16V22M54 16H48" stroke="#0B2A4A" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
 </svg>
