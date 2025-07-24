@@ -11,7 +11,7 @@ import {
   NodeConnectionType,
 } from 'n8n-workflow';
 
-import { CribopsHttp, CribopsAgent, CribopsWebhookMessage } from '../../utils/CribopsHttp';
+import { CribopsHttp, CribopsAgent, CribopsWebhookMessage, CribopsQueueMessage } from '../../utils/CribopsHttp';
 
 export class Cribops implements INodeType {
   description: INodeTypeDescription = {
@@ -57,6 +57,12 @@ export class Cribops implements INodeType {
             value: 'listAgents',
             description: 'List all available agents',
             action: 'List all available agents',
+          },
+          {
+            name: 'Poll Queue',
+            value: 'pollQueue',
+            description: 'Poll messages from the queue',
+            action: 'Poll messages from the queue',
           },
           {
             name: 'Reply to Conversation',
@@ -158,6 +164,45 @@ export class Cribops implements INodeType {
           },
         },
         description: 'Whether to show typing indicator (true) or stop typing (false)',
+      },
+      {
+        displayName: 'Tenant ID',
+        name: 'tenantId',
+        type: 'string',
+        required: true,
+        default: '',
+        placeholder: 'my-tenant',
+        displayOptions: {
+          show: {
+            operation: ['pollQueue'],
+          },
+        },
+        description: 'The tenant ID for your Cribops organization',
+      },
+      {
+        displayName: 'Batch Size',
+        name: 'batchSize',
+        type: 'number',
+        default: 10,
+        displayOptions: {
+          show: {
+            operation: ['pollQueue'],
+          },
+        },
+        description: 'Number of messages to retrieve (max 100)',
+      },
+      {
+        displayName: 'Queue Name',
+        name: 'queueName',
+        type: 'string',
+        default: '',
+        placeholder: 'e.g., stripe_events',
+        displayOptions: {
+          show: {
+            operation: ['pollQueue'],
+          },
+        },
+        description: 'Specific queue to poll (optional). Leave empty to poll all queues.',
       },
       {
         displayName: 'Message',
@@ -363,6 +408,9 @@ export class Cribops implements INodeType {
             break;
           case 'listAgents':
             responseData = await listAgents(this, cribopsHttp, i);
+            break;
+          case 'pollQueue':
+            responseData = await pollQueue(this, cribopsHttp, i);
             break;
           default:
             throw new NodeOperationError(
@@ -602,6 +650,50 @@ async function getAgent(executeFunctions: IExecuteFunctions, cribopsHttp: Cribop
 async function listAgents(executeFunctions: IExecuteFunctions, cribopsHttp: CribopsHttp, itemIndex: number): Promise<any> {
     const agents = await cribopsHttp.getAgents();
     return { agents, count: agents.length };
+  }
+
+async function pollQueue(executeFunctions: IExecuteFunctions, cribopsHttp: CribopsHttp, itemIndex: number): Promise<any> {
+    const tenantId = executeFunctions.getNodeParameter('tenantId', itemIndex) as string;
+    const batchSize = executeFunctions.getNodeParameter('batchSize', itemIndex, 10) as number;
+    const queueName = executeFunctions.getNodeParameter('queueName', itemIndex, '') as string || undefined;
+    
+    const messages = await cribopsHttp.pollQueue(tenantId, batchSize, queueName);
+    
+    // Process each message to parse the data if it's JSON
+    const processedMessages = messages.map(message => {
+      let parsedData = message.data.data;
+      try {
+        parsedData = JSON.parse(message.data.data);
+      } catch (e) {
+        // Keep as string if not valid JSON
+      }
+      
+      return {
+        id: message.id,
+        correlation_id: message.correlation_id,
+        queue_name: message.queue_name,
+        data: parsedData,
+        headers: message.data.headers,
+        params: message.data.params,
+        inserted_at: message.inserted_at,
+        // Extract useful fields from headers
+        tenant_id: message.data.headers['x-cribops-tenant-id'] || tenantId,
+        path: message.data.headers['x-cribops-path'],
+      };
+    });
+    
+    // Auto-acknowledge messages after processing
+    if (messages.length > 0) {
+      const messageIds = messages.map(msg => msg.id);
+      try {
+        await cribopsHttp.acknowledgeMessages(tenantId, messageIds);
+      } catch (ackError) {
+        // Log error but don't fail the operation
+        console.error('Failed to acknowledge messages:', ackError);
+      }
+    }
+    
+    return { messages: processedMessages, count: processedMessages.length };
   }
 
 

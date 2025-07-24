@@ -13,7 +13,7 @@ import {
   NodeOperationError,
 } from 'n8n-workflow';
 
-import { CribopsHttp, CribopsAgent } from '../../utils/CribopsHttp';
+import { CribopsHttp, CribopsAgent, CribopsQueueMessage } from '../../utils/CribopsHttp';
 
 export class CribopsTrigger implements INodeType {
   description: INodeTypeDescription = {
@@ -41,19 +41,90 @@ export class CribopsTrigger implements INodeType {
         responseMode: 'onReceived',
         // Dynamic path to trigger UUID generation
         path: '={{$parameter["agentId"]}}',
+        isFullPath: true,
       },
     ],
+    polling: true,
     properties: [
+      {
+        displayName: 'Trigger Mode',
+        name: 'triggerMode',
+        type: 'options',
+        options: [
+          {
+            name: 'Polling',
+            value: 'polling',
+            description: 'Poll the queue for messages at regular intervals',
+          },
+          {
+            name: 'Webhook',
+            value: 'webhook',
+            description: 'Receive messages via webhook',
+          },
+        ],
+        default: 'polling',
+        description: 'How to receive messages from Cribops',
+      },
+      {
+        displayName: 'Tenant ID',
+        name: 'tenantId',
+        type: 'string',
+        required: true,
+        default: '',
+        description: 'The tenant ID for your Cribops organization',
+      },
       {
         displayName: 'Agent Name or ID',
         name: 'agentId',
         type: 'options',
         required: true,
+        displayOptions: {
+          show: {
+            triggerMode: ['webhook'],
+          },
+        },
         typeOptions: {
           loadOptionsMethod: 'getAgents',
         },
         default: '',
         description: 'The Cribops agent to receive messages from. Choose from the list, or specify an ID using an <a href="https://docs.n8n.io/code/expressions/">expression</a>.',
+      },
+      {
+        displayName: 'Queue Name',
+        name: 'queueName',
+        type: 'string',
+        displayOptions: {
+          show: {
+            triggerMode: ['polling'],
+          },
+        },
+        default: '',
+        placeholder: 'e.g., stripe_events',
+        description: 'Specific queue to poll (optional). Leave empty to poll all queues.',
+      },
+      {
+        displayName: 'Poll Interval',
+        name: 'pollInterval',
+        type: 'number',
+        displayOptions: {
+          show: {
+            triggerMode: ['polling'],
+          },
+        },
+        default: 30,
+        description: 'How often to poll for messages in seconds',
+      },
+      {
+        displayName: 'Batch Size',
+        name: 'batchSize',
+        type: 'number',
+        displayOptions: {
+          show: {
+            triggerMode: ['polling'],
+          },
+        },
+        default: 10,
+        description: 'Number of messages to retrieve per poll (max 100)',
       },
       {
         displayName: 'Event Types',
@@ -215,15 +286,105 @@ export class CribopsTrigger implements INodeType {
   };
 
   async trigger(this: ITriggerFunctions): Promise<ITriggerResponse> {
-    // Minimal implementation - webhooks are handled by webhook() method
+    const triggerMode = this.getNodeParameter('triggerMode') as string;
+    
+    if (triggerMode === 'webhook') {
+      // Webhook mode - minimal implementation as webhooks are handled by webhook() method
+      return {
+        closeFunction: async () => {},
+        manualTriggerFunction: async () => {
+          throw new NodeOperationError(
+            this.getNode(),
+            'This node only works with webhooks in webhook mode. Please activate the workflow.',
+          );
+        },
+      };
+    }
+    
+    // Polling mode
+    const credentials = await this.getCredentials('cribopsApi');
+    const tenantId = this.getNodeParameter('tenantId') as string;
+    const pollInterval = this.getNodeParameter('pollInterval', 30) as number;
+    const batchSize = this.getNodeParameter('batchSize', 10) as number;
+    const queueName = this.getNodeParameter('queueName', '') as string || undefined;
+    
+    const cribopsHttp = new CribopsHttp({
+      baseUrl: credentials.baseUrl as string,
+      apiToken: credentials.apiToken as string,
+    });
+    
+    let intervalId: NodeJS.Timeout | undefined;
+    
+    const poll = async () => {
+      try {
+        const messages = await cribopsHttp.pollQueue(tenantId, batchSize, queueName);
+        
+        if (messages.length > 0) {
+          const messageIds = messages.map(msg => msg.id);
+          
+          // Process each message
+          for (const message of messages) {
+            // Parse the webhook data if it's JSON
+            let parsedData = message.data.data;
+            try {
+              parsedData = JSON.parse(message.data.data);
+            } catch (e) {
+              // Keep as string if not valid JSON
+            }
+            
+            // Emit the message
+            this.emit([
+              [
+                {
+                  json: {
+                    id: message.id,
+                    correlation_id: message.correlation_id,
+                    queue_name: message.queue_name,
+                    data: parsedData,
+                    headers: message.data.headers,
+                    params: message.data.params,
+                    inserted_at: message.inserted_at,
+                    // Extract useful fields from headers
+                    tenant_id: message.data.headers['x-cribops-tenant-id'] || tenantId,
+                    path: message.data.headers['x-cribops-path'],
+                  },
+                },
+              ],
+            ]);
+          }
+          
+          // Acknowledge messages after processing
+          try {
+            await cribopsHttp.acknowledgeMessages(tenantId, messageIds);
+          } catch (ackError) {
+            console.error('Failed to acknowledge messages:', ackError);
+          }
+        }
+      } catch (error) {
+        console.error('Polling error:', error);
+        // Don't throw - continue polling
+      }
+    };
+    
+    // Start polling
+    poll(); // Initial poll
+    intervalId = setInterval(poll, pollInterval * 1000);
+    
+    // Manual trigger function for testing
+    const manualTriggerFunction = async () => {
+      await poll();
+    };
+    
+    // Cleanup function
+    const closeFunction = async () => {
+      if (intervalId) {
+        clearInterval(intervalId);
+      }
+    };
+    
     return {
-      closeFunction: async () => {},
-      manualTriggerFunction: async () => {
-        throw new NodeOperationError(
-          this.getNode(),
-          'This node only works with webhooks. Please activate the workflow.',
-        );
-      },
+      closeFunction,
+      manualTriggerFunction,
     };
   }
 

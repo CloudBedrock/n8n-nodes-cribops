@@ -30,6 +30,18 @@ export interface CribopsWebhookMessage {
   fileType?: string;
 }
 
+export interface CribopsQueueMessage {
+  id: number;
+  correlation_id: string;
+  queue_name: string;
+  data: {
+    data: string;
+    params: IDataObject;
+    headers: IDataObject;
+  };
+  inserted_at: string;
+}
+
 
 export class CribopsHttp {
   private config: CribopsHttpConfig;
@@ -163,6 +175,47 @@ export class CribopsHttp {
       return response;
     } catch (error) {
       throw new Error(`Failed to send typing indicator for agent ${agentId}: ${error}`);
+    }
+  }
+
+  async pollQueue(tenantId: string, limit: number = 10, queueName?: string): Promise<CribopsQueueMessage[]> {
+    try {
+      const params: IDataObject = { limit };
+      if (queueName) {
+        params.queue_name = queueName;
+      }
+      
+      const url = `/api/queue/${tenantId}/poll?${new URLSearchParams(params as any).toString()}`;
+      const response = await this.makeRequest<CribopsQueueMessage[]>('GET', url);
+      return response;
+    } catch (error) {
+      throw new Error(`Failed to poll queue for tenant ${tenantId}: ${error}`);
+    }
+  }
+
+  async acknowledgeMessages(tenantId: string, messageIds: number[]): Promise<{ status: string; deleted_count: number }> {
+    try {
+      const response = await this.makeRequest<{ status: string; deleted_count: number }>(
+        'POST',
+        `/api/queue/${tenantId}/acknowledge`,
+        { message_ids: messageIds }
+      );
+      return response;
+    } catch (error) {
+      throw new Error(`Failed to acknowledge messages for tenant ${tenantId}: ${error}`);
+    }
+  }
+
+  async failMessages(tenantId: string, messageIds: number[], errorMessage: string): Promise<{ status: string; updated_count: number }> {
+    try {
+      const response = await this.makeRequest<{ status: string; updated_count: number }>(
+        'POST',
+        `/api/queue/${tenantId}/fail`,
+        { message_ids: messageIds, error_message: errorMessage }
+      );
+      return response;
+    } catch (error) {
+      throw new Error(`Failed to mark messages as failed for tenant ${tenantId}: ${error}`);
     }
   }
 }

@@ -25,7 +25,7 @@ export class CribopsApi implements ICredentialType {
       displayName: 'Base URL',
       name: 'baseUrl',
       type: 'string',
-      default: 'https://api.cribops.com',
+      default: 'https://cribops.com',
       required: true,
       description: 'Base URL of the Cribops API',
     },
