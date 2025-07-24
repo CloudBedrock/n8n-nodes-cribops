@@ -1,12 +1,8 @@
 <svg width="60" height="60" viewBox="0 0 60 60" fill="none" xmlns="http://www.w3.org/2000/svg">
-  <!-- Simplified, bolder cloud shape -->
-  <path d="M48 24C48 15.72 41.28 9 33 9C26.1 9 20.25 13.32 17.88 19.38C17.25 19.14 16.62 19.02 15.96 19.02C11.52 19.02 7.92 22.62 7.92 27.06C7.92 27.6 7.98 28.14 8.1 28.62C3.66 29.34 0.3 33.18 0.3 37.8C0.3 42.96 4.44 47.1 9.6 47.1H45.6C51.9 47.1 57 42 57 35.7C57 29.88 52.68 25.08 47.16 24.42C47.64 24.3 48 24.18 48 24Z" fill="#0B6FCC" stroke="#0B6FCC" stroke-width="1"/>
-  
-  <!-- Simpler, bolder bars -->
-  <rect x="16" y="35" width="8" height="12" rx="1" fill="white"/>
-  <rect x="26" y="28" width="8" height="19" rx="1" fill="white"/>
-  <rect x="36" y="23" width="8" height="24" rx="1" fill="white"/>
-  
-  <!-- Bold lightning bolt for trigger -->
-  <path d="M50 14L44 26H54L48 38" stroke="#FFC107" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+  <rect width="60" height="60" rx="12" fill="#059669"/>
+  <path d="M15 20C15 17.7909 16.7909 16 19 16H41C43.2091 16 45 17.7909 45 20V32C45 34.2091 43.2091 36 41 36H26L18 42V36H19C16.7909 36 15 34.2091 15 32V20Z" fill="white"/>
+  <path d="M20 24L28 28L20 32V24Z" fill="#059669"/>
+  <rect x="32" y="24" width="8" height="2" fill="#059669"/>
+  <rect x="32" y="28" width="8" height="2" fill="#059669"/>
+  <rect x="32" y="32" width="6" height="2" fill="#059669"/>
 </svg>
