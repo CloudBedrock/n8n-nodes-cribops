@@ -121,9 +121,8 @@ export class CribopsTrigger implements INodeType {
         });
 
         try {
-          // Get organization ID from credentials if provided
-          const organizationId = credentials.organizationId as string | undefined;
-          const webhooks = await cribopsHttp.getWebhooks(organizationId);
+          // Organization is automatically determined from API key
+          const webhooks = await cribopsHttp.getWebhooks();
           
           // Filter for N8N type webhooks that are active and not linked
           const availableWebhooks = webhooks.filter((webhook: CribopsWebhookEntity) => 
@@ -138,7 +137,26 @@ export class CribopsTrigger implements INodeType {
             description: webhook.description || `Type: ${webhook.type}`,
           }));
         } catch (error) {
-          throw new NodeOperationError(this.getNode(), `Failed to load webhooks: ${error instanceof Error ? error.message : String(error)}`);
+          let errorMessage = 'Failed to load webhooks';
+          
+          if (error instanceof Error) {
+            errorMessage += `: ${error.message}`;
+            
+            // Check for common issues
+            if (error.message.includes('HTTP 401') || error.message.includes('Unauthorized')) {
+              errorMessage = 'Authentication failed. Please check your API token in the credentials.';
+            } else if (error.message.includes('HTTP 404')) {
+              errorMessage = 'Webhook endpoint not found. Please check the API base URL in credentials.';
+            } else if (error.message.includes('HTTP 403')) {
+              errorMessage = 'Access forbidden. Your API token may not have permission to access webhooks.';
+            } else if (error.message.includes('Failed to fetch') || error.message.includes('network')) {
+              errorMessage = 'Network error. Please check the API base URL and ensure the Cribops API is accessible.';
+            } else if (error.message.includes('HTTP 400')) {
+              errorMessage = 'Bad request. Please check that the API endpoint is correct and your API token has the necessary permissions.';
+            }
+          }
+          
+          throw new NodeOperationError(this.getNode(), errorMessage);
         }
       },
     },

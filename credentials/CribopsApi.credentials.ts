@@ -29,13 +29,6 @@ export class CribopsApi implements ICredentialType {
       required: true,
       description: 'Base URL of the Cribops API',
     },
-    {
-      displayName: 'Organization ID',
-      name: 'organizationId',
-      type: 'string',
-      default: '',
-      description: 'Organization ID (optional - if not provided, will use the default organization for the API token)',
-    },
   ];
 
   authenticate: IAuthenticateGeneric = {

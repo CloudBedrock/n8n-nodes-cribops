@@ -74,10 +74,10 @@ export class CribopsHttp {
   ): Promise<T> {
     let url = `${this.config.baseUrl}${endpoint}`;
     
-    // Handle query parameters
-    if (method === 'GET' && data?.params) {
+    // Handle query parameters for GET requests
+    if (method === 'GET' && data && Object.keys(data).length > 0) {
       const params = new URLSearchParams();
-      Object.entries(data.params as Record<string, any>).forEach(([key, value]) => {
+      Object.entries(data as Record<string, any>).forEach(([key, value]) => {
         if (value !== undefined && value !== null) {
           params.append(key, String(value));
         }
@@ -86,7 +86,8 @@ export class CribopsHttp {
       if (queryString) {
         url += `?${queryString}`;
       }
-      delete data.params;
+      // Clear data for GET requests as params are in URL
+      data = undefined;
     }
     
     const requestHeaders: Record<string, string> = {
@@ -109,8 +110,18 @@ export class CribopsHttp {
       });
 
       if (!response.ok) {
-        const errorText = await response.text();
-        throw new Error(`HTTP ${response.status}: ${errorText}`);
+        let errorText = await response.text();
+        let errorDetail = '';
+        
+        // Try to parse error response as JSON
+        try {
+          const errorJson = JSON.parse(errorText);
+          errorDetail = errorJson.message || errorJson.error || errorText;
+        } catch {
+          errorDetail = errorText;
+        }
+        
+        throw new Error(`HTTP ${response.status}: ${errorDetail}`);
       }
 
       const result = await response.json();
@@ -161,8 +172,18 @@ export class CribopsHttp {
       });
 
       if (!response.ok) {
-        const errorText = await response.text();
-        throw new Error(`HTTP ${response.status}: ${errorText}`);
+        let errorText = await response.text();
+        let errorDetail = '';
+        
+        // Try to parse error response as JSON
+        try {
+          const errorJson = JSON.parse(errorText);
+          errorDetail = errorJson.message || errorJson.error || errorText;
+        } catch {
+          errorDetail = errorText;
+        }
+        
+        throw new Error(`HTTP ${response.status}: ${errorDetail}`);
       }
 
       const arrayBuffer = await response.arrayBuffer();
@@ -248,11 +269,23 @@ export class CribopsHttp {
   }
 
   // Webhook-specific methods
-  async getWebhooks(organizationId?: string): Promise<CribopsWebhookEntity[]> {
+  async getWebhooks(): Promise<CribopsWebhookEntity[]> {
     try {
-      const params = organizationId ? { params: { organization_id: organizationId } } : undefined;
-      const response = await this.makeRequest<{ data: CribopsWebhookEntity[] }>('GET', '/api/v1/webhooks', params);
-      return response.data || [];
+      // Organization is automatically determined from API key
+      const response = await this.makeRequest<any>('GET', '/api/v1/webhooks');
+      
+      // Handle different response structures
+      // The API might return webhooks directly as array or wrapped in data property
+      if (Array.isArray(response)) {
+        return response as CribopsWebhookEntity[];
+      } else if (response.data && Array.isArray(response.data)) {
+        return response.data as CribopsWebhookEntity[];
+      } else if (response.webhooks && Array.isArray(response.webhooks)) {
+        return response.webhooks as CribopsWebhookEntity[];
+      } else {
+        // If we can't find webhooks, return empty array
+        return [];
+      }
     } catch (error) {
       throw new Error(`Failed to fetch webhooks: ${error}`);
     }
