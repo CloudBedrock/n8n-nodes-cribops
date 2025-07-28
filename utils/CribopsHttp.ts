@@ -42,6 +42,19 @@ export interface CribopsQueueMessage {
   inserted_at: string;
 }
 
+export interface CribopsWebhookEntity {
+  id: string;
+  name: string;
+  description?: string;
+  type: 'N8N' | 'GHL_API' | 'GENERIC';
+  status: 'active' | 'inactive';
+  linked_workflow_id?: string;
+  linked_workflow_name?: string;
+  organization_id: string;
+  created_at: string;
+  updated_at: string;
+}
+
 
 export class CribopsHttp {
   private config: CribopsHttpConfig;
@@ -59,7 +72,22 @@ export class CribopsHttp {
     data?: IDataObject,
     options?: Partial<IHttpRequestOptions>
   ): Promise<T> {
-    const url = `${this.config.baseUrl}${endpoint}`;
+    let url = `${this.config.baseUrl}${endpoint}`;
+    
+    // Handle query parameters
+    if (method === 'GET' && data?.params) {
+      const params = new URLSearchParams();
+      Object.entries(data.params as Record<string, any>).forEach(([key, value]) => {
+        if (value !== undefined && value !== null) {
+          params.append(key, String(value));
+        }
+      });
+      const queryString = params.toString();
+      if (queryString) {
+        url += `?${queryString}`;
+      }
+      delete data.params;
+    }
     
     const requestHeaders: Record<string, string> = {
       'Authorization': `Bearer ${this.config.apiToken}`,
@@ -77,7 +105,7 @@ export class CribopsHttp {
       const response = await fetch(url, {
         method,
         headers: requestHeaders,
-        body: data ? JSON.stringify(data) : undefined,
+        body: (method !== 'GET' && data) ? JSON.stringify(data) : undefined,
       });
 
       if (!response.ok) {
@@ -216,6 +244,38 @@ export class CribopsHttp {
       return response;
     } catch (error) {
       throw new Error(`Failed to mark messages as failed for tenant ${tenantId}: ${error}`);
+    }
+  }
+
+  // Webhook-specific methods
+  async getWebhooks(organizationId?: string): Promise<CribopsWebhookEntity[]> {
+    try {
+      const params = organizationId ? { params: { organization_id: organizationId } } : undefined;
+      const response = await this.makeRequest<{ data: CribopsWebhookEntity[] }>('GET', '/api/v1/webhooks', params);
+      return response.data || [];
+    } catch (error) {
+      throw new Error(`Failed to fetch webhooks: ${error}`);
+    }
+  }
+
+  async linkWebhook(webhookId: string, linkData: {
+    workflow_id: string;
+    webhook_url: string;
+    test_webhook_url: string;
+    workflow_name: string;
+  }): Promise<any> {
+    try {
+      return await this.makeRequest('POST', `/api/v1/webhooks/${webhookId}/link`, linkData);
+    } catch (error) {
+      throw new Error(`Failed to link webhook: ${error}`);
+    }
+  }
+
+  async unlinkWebhook(webhookId: string): Promise<any> {
+    try {
+      return await this.makeRequest('DELETE', `/api/v1/webhooks/${webhookId}/link`);
+    } catch (error) {
+      throw new Error(`Failed to unlink webhook: ${error}`);
     }
   }
 

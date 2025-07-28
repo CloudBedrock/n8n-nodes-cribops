@@ -11,7 +11,7 @@ import {
   NodeOperationError,
 } from 'n8n-workflow';
 
-import { CribopsHttp } from '../../utils/CribopsHttp';
+import { CribopsHttp, CribopsWebhookEntity } from '../../utils/CribopsHttp';
 
 export class CribopsTrigger implements INodeType {
   description: INodeTypeDescription = {
@@ -51,7 +51,7 @@ export class CribopsTrigger implements INodeType {
           loadOptionsMethod: 'getWebhooks',
         },
         default: '',
-        description: 'The Cribops webhook to use. Choose from the list, or specify an ID using an <a href="https://docs.n8n.io/code/expressions/">expression</a>.',
+        description: 'Choose from the list, or specify an ID using an <a href="https://docs.n8n.io/code/expressions/">expression</a>',
       },
       {
         displayName: 'Event Types',
@@ -121,15 +121,21 @@ export class CribopsTrigger implements INodeType {
         });
 
         try {
-          // Call the API to get available webhooks
-          // The API endpoint would be something like GET /api/v1/webhooks
-          const response = await cribopsHttp.request('GET', '/api/v1/webhooks');
-          const webhooks = response.data || [];
+          // Get organization ID from credentials if provided
+          const organizationId = credentials.organizationId as string | undefined;
+          const webhooks = await cribopsHttp.getWebhooks(organizationId);
           
-          return webhooks.map((webhook: any) => ({
-            name: webhook.name || webhook.id,
+          // Filter for N8N type webhooks that are active and not linked
+          const availableWebhooks = webhooks.filter((webhook: CribopsWebhookEntity) => 
+            webhook.type === 'N8N' && 
+            webhook.status === 'active' && 
+            !webhook.linked_workflow_id
+          );
+          
+          return availableWebhooks.map((webhook: CribopsWebhookEntity) => ({
+            name: webhook.name,
             value: webhook.id,
-            description: webhook.description || `Webhook ID: ${webhook.id}`,
+            description: webhook.description || `Type: ${webhook.type}`,
           }));
         } catch (error) {
           throw new NodeOperationError(this.getNode(), `Failed to load webhooks: ${error instanceof Error ? error.message : String(error)}`);
@@ -149,9 +155,9 @@ export class CribopsTrigger implements INodeType {
       async create(this: IHookFunctions): Promise<boolean> {
         const webhookUrl = this.getNodeWebhookUrl('default') as string;
         const webhookId = this.getNodeParameter('webhookId') as string;
-        const eventTypes = this.getNodeParameter('eventTypes', []) as string[];
-        const additionalFields = this.getNodeParameter('additionalFields', {}) as IDataObject;
         const credentials = await this.getCredentials('cribopsApi');
+        const workflowId = this.getWorkflow().id;
+        const workflowName = this.getWorkflow().name;
 
         const cribopsHttp = new CribopsHttp({
           baseUrl: credentials.baseUrl as string,
@@ -159,27 +165,27 @@ export class CribopsTrigger implements INodeType {
         });
 
         try {
-          // Register this n8n webhook URL with the Cribops webhook
+          // Link this workflow to the webhook entity
           const body = {
-            webhook_id: webhookId,
-            target_url: webhookUrl,
-            event_types: eventTypes,
-            secret: additionalFields.secretToken || undefined,
+            workflow_id: workflowId,
+            webhook_url: webhookUrl,
+            test_webhook_url: webhookUrl.replace('/webhook/', '/webhook-test/'),
+            workflow_name: workflowName || 'Unnamed Workflow',
           };
 
-          // Register the n8n webhook URL with Cribops
-          await cribopsHttp.request('POST', `/api/v1/webhooks/${webhookId}/targets`, body);
+          // Link the n8n workflow to the webhook entity
+          await cribopsHttp.request('POST', `/api/v1/webhooks/${webhookId}/link`, body);
           
           // Store webhook data for later use
           const webhookData = this.getWorkflowStaticData('node');
           webhookData.webhookId = webhookId;
-          webhookData.targetUrl = webhookUrl;
+          webhookData.webhookUrl = webhookUrl;
 
           return true;
         } catch (error) {
           throw new NodeOperationError(
             this.getNode(),
-            `Failed to register webhook target: ${error instanceof Error ? error.message : String(error)}`,
+            `Failed to link webhook: ${error instanceof Error ? error.message : String(error)}`,
           );
         }
       },
@@ -188,7 +194,7 @@ export class CribopsTrigger implements INodeType {
         const webhookData = this.getWorkflowStaticData('node');
         const credentials = await this.getCredentials('cribopsApi');
 
-        if (!webhookData.webhookId || !webhookData.targetUrl) {
+        if (!webhookData.webhookId) {
           return true;
         }
 
@@ -198,18 +204,16 @@ export class CribopsTrigger implements INodeType {
         });
 
         try {
-          // Unregister the n8n webhook URL from Cribops
-          await cribopsHttp.request('DELETE', `/api/v1/webhooks/${webhookData.webhookId}/targets`, {
-            target_url: webhookData.targetUrl,
-          });
+          // Unlink the workflow from the webhook entity
+          await cribopsHttp.request('DELETE', `/api/v1/webhooks/${webhookData.webhookId}/link`);
 
           delete webhookData.webhookId;
-          delete webhookData.targetUrl;
+          delete webhookData.webhookUrl;
 
           return true;
         } catch (error) {
           // Log error but don't fail
-          console.error('Failed to unregister webhook target:', error);
+          console.error('Failed to unlink webhook:', error);
           return true;
         }
       },
