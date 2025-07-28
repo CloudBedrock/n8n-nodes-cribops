@@ -34,7 +34,6 @@ export class CribopsApi implements ICredentialType {
       name: 'organizationId',
       type: 'string',
       default: '',
-      required: false,
       description: 'Organization ID (optional - if not provided, will use the default organization for the API token)',
     },
   ];
