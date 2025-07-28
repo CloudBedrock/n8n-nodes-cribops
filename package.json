@@ -1,6 +1,6 @@
 {
   "name": "n8n-nodes-cribops",
-  "version": "0.1.18",
+  "version": "0.1.19",
   "description": "n8n community node for Cribops AI platform integration",
   "keywords": [
     "n8n-community-node-package"
