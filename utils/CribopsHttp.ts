@@ -218,4 +218,9 @@ export class CribopsHttp {
       throw new Error(`Failed to mark messages as failed for tenant ${tenantId}: ${error}`);
     }
   }
+
+  // Generic request method for custom API calls
+  async request<T = any>(method: IHttpRequestMethods, endpoint: string, data?: IDataObject, options?: Partial<IHttpRequestOptions>): Promise<T> {
+    return this.makeRequest<T>(method, endpoint, data, options);
+  }
 }
